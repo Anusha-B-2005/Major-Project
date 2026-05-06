@@ -10,7 +10,7 @@ from tensorflow.keras.layers import Input, Dense, Concatenate
 # PARAMETERS
 # =========================
 EVAL_HOLDOUT_FRACTION = 0.2
-GAIN_EPOCHS = 200
+GAIN_EPOCHS = 450
 BATCH_SIZE = 64
 RANDOM_SEED = 42
 
@@ -92,15 +92,53 @@ def build_gain(input_dim):
 # =========================
 # TRAIN
 # =========================
+#def train_gain(generator, discriminator, X, M):
+#    n = X.shape[0]
+#   for _ in range(GAIN_EPOCHS):
+#        idx = np.random.permutation(n)
+#        for i in range(0, n, BATCH_SIZE):
+#           b = idx[i:i+BATCH_SIZE]
+#            xb, mb = X[b], M[b]
+#            generator.train_on_batch([xb, mb], mb)
+#            discriminator.train_on_batch([xb, mb], mb)
+
+#ToTEST=======================================
 def train_gain(generator, discriminator, X, M):
     n = X.shape[0]
-    for _ in range(GAIN_EPOCHS):
+
+    print(f"\n🚀 Training Started (Epochs={GAIN_EPOCHS}, Batch Size={BATCH_SIZE})\n")
+
+    final_g_loss = 0
+    final_d_loss = 0
+
+    for epoch in range(GAIN_EPOCHS):
         idx = np.random.permutation(n)
+
         for i in range(0, n, BATCH_SIZE):
             b = idx[i:i+BATCH_SIZE]
             xb, mb = X[b], M[b]
-            generator.train_on_batch([xb, mb], mb)
-            discriminator.train_on_batch([xb, mb], mb)
+
+            # Train models
+            g_loss = generator.train_on_batch([xb, mb], mb)
+            d_loss = discriminator.train_on_batch([xb, mb], mb)
+
+            final_g_loss = g_loss
+            final_d_loss = d_loss
+
+        # Print progress every 50 epochs
+        if epoch % 50 == 0:
+            print(f"Epoch {epoch} | Generator Loss: {g_loss:.4f} | Discriminator Loss: {d_loss:.4f}")
+
+    print(f"Epoch {epoch} | Generator Loss: {g_loss:.4f} | Discriminator Loss: {d_loss:.4f}")
+    print("\n✅ Training Completed\n")
+
+    # Final summary
+    print(f"Epochs = {GAIN_EPOCHS}")
+    print(f"Batch Size = {BATCH_SIZE}")
+    print(f"Final Generator Loss ≈ {final_g_loss:.4f}")
+    print(f"Final Discriminator Loss ≈ {final_d_loss:.4f}\n")
+##TestComplete================================================================
+
 
 # =========================
 # IMPUTE ONLY MISSING
