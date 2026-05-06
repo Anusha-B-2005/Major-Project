@@ -94,3 +94,10 @@ if uploaded_file:
             "final_imputed_dataset.csv",
             "text/csv"
         )
+
+    
+        st.subheader("📉 Missing Values Visualization")
+        fig, ax = plt.subplots()
+        df_final.isnull().sum().plot(kind="bar", ax=ax)
+        st.pyplot(fig)
+
