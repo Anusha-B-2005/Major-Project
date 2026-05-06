@@ -53,11 +53,12 @@ metadata.detect_from_dataframe(df_imputed)
 # STEP 6: CTGAN
 ctgan = CTGANSynthesizer(
     metadata,
-    epochs=100,
-    batch_size=20,
+    epochs=1000,
+    batch_size=200,
     verbose=True
 )
-ctgan.fit(partial_df)
+#ctgan.fit(partial_df)
+ctgan.fit(df_imputed)
 
 # STEP 7: SYNTHETIC DATA
 synthetic_df = ctgan.sample(num_rows=500)
@@ -105,7 +106,7 @@ for col in df.columns:
 # STEP 8: QUALITY CHECK
 if len(numeric_cols) > 0:
     numeric_col = numeric_cols[0]
-    ks_stat, p_value = ks_2samp(
+    p_value, ks_stat = ks_2samp(
         df[numeric_col].dropna(),
         synthetic_df[numeric_col]
     )
